@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VP User Setup · Ampirical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Epilogue:wght@300;400;500&family=Epilogue+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red: #C0392B;
+  --red-dark: #922B21;
+  --red-light: #FADBD8;
+  --green: #1E8449;
+  --green-light: #D5F5E3;
+  --blue: #1A5276;
+  --blue-light: #D6EAF8;
+  --amber: #7D6608;
+  --amber-light: #FEF9E7;
+  --amber-border: #F9E79F;
+  --ink: #1a1a2e;
+  --muted: #5d6474;
+  --border: #e2e5ed;
+  --surface: #ffffff;
+  --bg: #f4f5f8;
+  --display: 'Syne', sans-serif;
+  --body: 'Epilogue', sans-serif;
+  --mono: 'Epilogue Mono', 'Courier New', monospace;
+}
+
+body {
+  background: var(--bg);
+  font-family: var(--body);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 36px 16px 72px;
+  background-image: radial-gradient(circle at 20% 20%, rgba(192,57,43,0.04) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(26,82,118,0.04) 0%, transparent 50%);
+}
+
+.shell {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.hdr {
+  background: var(--ink);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 32px 24px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hdr::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: rgba(192,57,43,0.15);
+  border-radius: 50%;
+}
+.hdr::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; left: 40%;
+  width: 120px; height: 120px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 50%;
+}
+.hdr-inner { position: relative; z-index: 1; display: flex; align-items: center; gap: 16px; }
+.hdr-badge {
+  background: var(--red);
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(192,57,43,0.4);
+}
+.hdr-text .eyebrow {
+  font-family: var(--display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+.hdr-text h1 {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: #fff;
+}
+.hdr-text h1 span { color: var(--red); }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  background: #14141f;
+  gap: 2px;
+  padding: 6px 8px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 9px 6px;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 8px;
+}
+.tab-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.06); }
+.tab-btn.active { color: #fff; background: var(--red); }
+
+/* ── Card ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 20px 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Section label ── */
+.section-label {
+  font-family: var(--display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Fields ── */
+.field { margin-bottom: 20px; }
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.req { color: var(--red); }
+
+.input-row { display: flex; gap: 8px; align-items: stretch; }
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--body);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  transition: all .15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--red);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
+}
+input[readonly] { background: #f8f9fb; color: var(--muted); cursor: default; }
+input[readonly]:focus { border-color: var(--border); box-shadow: none; background: #f8f9fb; }
+.mono-input { font-family: var(--mono); font-size: 13px; letter-spacing: .04em; }
+
+.hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; font-style: italic; }
+
+/* ── Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.badge-green { background: var(--green-light); color: var(--green); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 20px;
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--red); color: #fff; box-shadow: 0 3px 10px rgba(192,57,43,0.3); }
+.btn-primary:hover { background: var(--red-dark); box-shadow: 0 4px 14px rgba(192,57,43,0.4); transform: translateY(-1px); }
+.btn-primary:disabled { background: #ccc; box-shadow: none; transform: none; cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-sm { padding: 7px 12px; font-size: 11px; }
+.btn-block { width: 100%; }
+
+.btn-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ── Password display ── */
+.pw-display {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: .2em;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  transition: all .2s;
+  min-width: 0;
+}
+.pw-display.live { color: var(--red); border-color: var(--red-light); background: var(--red-light); }
+
+/* ── Divider ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 26px 0; }
+
+/* ── Output box ── */
+.output-box {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.output-box .email-body {
+  font-family: var(--body);
+  font-size: 13.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  color: var(--ink);
+}
+
+/* ── Ticket box ── */
+.ticket-box {
+  background: var(--blue-light);
+  border: 1.5px solid #AED6F1;
+  border-radius: 12px;
+  padding: 20px;
+}
+.ticket-box pre {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  color: var(--blue);
+}
+
+/* ── Send instructions ── */
+.send-instructions {
+  display: none;
+  margin-top: 16px;
+  background: var(--amber-light);
+  border: 1.5px solid var(--amber-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.send-instructions .si-title {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+}
+.send-instructions .si-steps {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.9;
+}
+.si-inline {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: #fff;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid #e8daa0;
+}
+
+/* ── Alert ── */
+.alert {
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: none;
+}
+.alert.show { display: block; }
+.alert-success { background: var(--green-light); color: var(--green); border: 1px solid #A9DFBF; }
+.alert-warn { background: var(--red-light); color: var(--red); border: 1px solid #F1948A; }
+
+/* ── Copy flash ── */
+.copy-flash {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: .06em;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.copy-flash.show { opacity: 1; }
+
+/* ── Checklist ── */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li.done { opacity: .4; }
+.checklist li.done .chk { background: var(--green); border-color: var(--green); }
+.checklist li.done .chk::after { display: block; }
+.chk {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  position: relative;
+  transition: all .15s;
+}
+.chk::after {
+  content: '✓';
+  display: none;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.step-num {
+  font-family: var(--display);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+.step-text { font-size: 14px; color: var(--ink); font-weight: 500; }
+.step-detail { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+/* ── Reset link ── */
+.reset-link {
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-transform: uppercase;
+}
+.reset-link:hover { color: var(--red); }
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tab-panel.active { animation: fadeUp .2s ease; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-inner">
+      <div class="hdr-badge">👤</div>
+      <div class="hdr-text">
+        <div class="eyebrow">Ampirical · Deltek Vantagepoint</div>
+        <h1>VP <span>User</span> Setup</h1>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('setup')">📋 Setup</button>
+    <button class="tab-btn" onclick="switchTab('email')">✉️ Email</button>
+    <button class="tab-btn" onclick="switchTab('ticket')">🎫 Ticket</button>
+    <button class="tab-btn" onclick="switchTab('checklist')">✅ Checklist</button>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- ══ SETUP TAB ══ -->
+    <div id="tab-setup" class="tab-panel active">
+
+      <div class="section-label">Employee Info</div>
+
+      <div class="field">
+        <label>Full Name <span class="req">*</span></label>
+        <input type="text" id="fullName" placeholder="e.g. Dirk Blasio" oninput="onNameInput()" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>
+          Username <span class="req">*</span>
+          <span id="userBadge" class="badge badge-green" style="display:none;">Auto</span>
+        </label>
+        <div class="input-row">
+          <input type="text" id="username" class="mono-input" placeholder="e.g. DIRKB" oninput="onUserManual()">
+          <button class="btn btn-ghost btn-sm" onclick="resetUser()" title="Reset to auto">↺</button>
+        </div>
+        <div class="hint">First name + first letter of last name, ALL CAPS</div>
+      </div>
+
+      <div class="field">
+        <label>
+          Email
+          <span id="emailBadge" class="badge badge-green" style="display:none;">Auto</span>
+        </label>
+        <div class="input-row">
+          <input type="text" id="emailLocal" placeholder="dirk.blasio" oninput="onEmailManual()" style="flex:1;">
+          <span style="line-height:42px;color:var(--muted);font-size:13px;padding:0 4px;flex-shrink:0;">@ampirical.com</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="section-label">Temp Password</div>
+
+      <div class="field">
+        <div class="input-row" style="align-items:center;">
+          <div class="pw-display" id="pwDisplay">— — — — —</div>
+          <button class="btn btn-ghost" onclick="genPw()">🔄 Generate</button>
+          <button class="btn btn-primary" id="usePwBtn" onclick="usePw()" disabled>✓ Use</button>
+        </div>
+        <div id="pwStatus" style="margin-top:8px;font-size:12px;color:var(--muted);">Click Generate to create a secure 9-character password.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="alert alert-success" id="setupAlert">
+        ✅ Details saved — switch to <strong>Email</strong> or <strong>Ticket</strong> tabs.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary btn-block" onclick="saveSetup()">Save &amp; Continue →</button>
+      </div>
+      <div style="margin-top:12px;text-align:center;">
+        <button class="reset-link" onclick="fullReset()">↺ Reset all fields</button>
+      </div>
+
+    </div>
+
+    <!-- ══ EMAIL TAB ══ -->
+    <div id="tab-email" class="tab-panel">
+
+      <div class="alert alert-warn show" id="emailAlert" style="display:none;">
+        ⚠️ Complete User Setup first before generating the email.
+      </div>
+
+      <div id="emailContent" style="display:none;">
+        <div class="section-label">Welcome Email Preview</div>
+        <div class="output-box">
+          <div class="email-body" id="emailPreview"></div>
+        </div>
+
+        <div class="btn-row" style="margin-top:16px;">
+          <button id="outlookBtn" class="btn btn-primary" style="flex:1;" onclick="openOutlook()">📧 Open in Outlook</button>
+          <button class="btn btn-ghost" onclick="copyEmail()">📋 Copy Body</button>
+          <span class="copy-flash" id="copyFlash">Copied!</span>
+        </div>
+
+        <!-- Fallback instructions -->
+        <div class="send-instructions" id="sendInstructions">
+          <div class="si-title">📋 Paste into Outlook manually</div>
+          <div class="si-steps">
+            <b>1.</b> Open Outlook → click <b>New Email</b><br>
+            <b>2.</b> To: <span class="si-inline" id="toDisplay"></span>
+            <button onclick="copyTo()" class="btn btn-ghost btn-sm" style="margin-left:6px;padding:3px 10px;">Copy</button>
+            <span class="copy-flash" id="toCopyFlash">Copied!</span><br>
+            <b>3.</b> Subject: <span class="si-inline" id="subjectDisplay"></span>
+            <button onclick="copySubject()" class="btn btn-ghost btn-sm" style="margin-left:6px;padding:3px 10px;">Copy</button>
+            <span class="copy-flash" id="subjectCopyFlash">Copied!</span><br>
+            <b>4.</b> Paste the copied body into the email → click <b>Send</b>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="section-label">Email Fields</div>
+        <div class="field">
+          <label>To</label>
+          <input type="text" id="toField" readonly class="mono-input" style="font-size:13px;">
+        </div>
+        <div class="field">
+          <label>Subject</label>
+          <input type="text" id="subjectField" readonly style="font-size:13px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TICKET TAB ══ -->
+    <div id="tab-ticket" class="tab-panel">
+
+      <div class="alert alert-warn show" id="ticketAlert" style="display:none;">
+        ⚠️ Complete User Setup first before generating the ticket note.
+      </div>
+
+      <div id="ticketContent" style="display:none;">
+        <div class="section-label">IT Ticket Closure Note</div>
+        <div class="ticket-box">
+          <pre id="ticketPreview"></pre>
+        </div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn btn-ghost" onclick="copyTicket()" style="flex:1;">📋 Copy Ticket Note</button>
+          <span class="copy-flash" id="ticketCopyFlash">Copied!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CHECKLIST TAB ══ -->
+    <div id="tab-checklist" class="tab-panel">
+      <div class="section-label">VP Setup Checklist</div>
+      <ul class="checklist" id="checklist">
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 1</span>
+            <span class="step-text">Enter employee full name in Setup tab</span>
+            <div class="step-detail">Username and email auto-fill. Adjust if needed.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 2</span>
+            <span class="step-text">Generate &amp; confirm temporary password</span>
+            <div class="step-detail">Click Generate, then Use This Password.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 3</span>
+            <span class="step-text">Open Vantagepoint → Settings → Users → New</span>
+            <div class="step-detail">Log in to VP with admin credentials.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 4</span>
+            <span class="step-text">Enter username, link employee record, set role</span>
+            <div class="step-detail">Link to the matching employee in VP.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 5</span>
+            <span class="step-text">Enter temporary password &amp; check Force Reset</span>
+            <div class="step-detail">User must change password on first login.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 6</span>
+            <span class="step-text">Save the user in Vantagepoint</span>
+            <div class="step-detail">Confirm the user appears in the user list.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 7</span>
+            <span class="step-text">Send welcome email via Email tab</span>
+            <div class="step-detail">Click Open in Outlook — pre-fills automatically.</div>
+          </div>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <div class="chk"></div>
+          <div>
+            <span class="step-num">Step 8</span>
+            <span class="step-text">Close IT ticket using Ticket tab</span>
+            <div class="step-detail">Copy the closure note and paste into your ticket system.</div>
+          </div>
+        </li>
+      </ul>
+      <div style="margin-top:16px;">
+        <button class="btn btn-ghost btn-sm" onclick="resetChecklist()">↺ Reset Checklist</button>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /shell -->
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+var state = {
+  fullName: '', username: '', email: '',
+  password: '', userManual: false, emailManual: false, confirmed: false
+};
+var generatedPw = '';
+var currentMailto = '';
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  var map = ['setup', 'email', 'ticket', 'checklist'];
+  document.querySelectorAll('.tab-btn')[map.indexOf(name)].classList.add('active');
+  if (name === 'email') renderEmail();
+  if (name === 'ticket') renderTicket();
+}
+
+// ── Name auto-fill ─────────────────────────────────────────────────────────
+function onNameInput() {
+  var full = document.getElementById('fullName').value.trim();
+  if (!state.userManual) {
+    var u = buildUsername(full);
+    document.getElementById('username').value = u;
+    showBadge('userBadge', u !== '');
+  }
+  if (!state.emailManual) {
+    var e = buildEmailLocal(full);
+    document.getElementById('emailLocal').value = e;
+    showBadge('emailBadge', e !== '');
+  }
+}
+
+function buildUsername(full) {
+  var parts = full.trim().split(/\s+/);
+  if (parts.length < 2) return '';
+  return (parts[0] + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+function buildEmailLocal(full) {
+  var parts = full.trim().split(/\s+/);
+  if (parts.length < 2) return '';
+  return (parts[0] + '.' + parts[parts.length - 1]).toLowerCase();
+}
+
+function onUserManual() { state.userManual = true; showBadge('userBadge', false); }
+function onEmailManual() { state.emailManual = true; showBadge('emailBadge', false); }
+
+function resetUser() {
+  state.userManual = false;
+  var full = document.getElementById('fullName').value.trim();
+  var u = buildUsername(full);
+  document.getElementById('username').value = u;
+  showBadge('userBadge', u !== '');
+}
+
+function showBadge(id, show) {
+  document.getElementById(id).style.display = show ? 'inline-flex' : 'none';
+}
+
+// ── Password ───────────────────────────────────────────────────────────────
+function genPw() {
+  var upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  var lower = 'abcdefghjkmnpqrstuvwxyz';
+  var digits = '23456789';
+  var special = '!@#$';
+  var all = upper + lower + digits + special;
+  var pw = upper[rand(upper.length)] + lower[rand(lower.length)] +
+           digits[rand(digits.length)] + special[rand(special.length)];
+  for (var i = 4; i < 9; i++) pw += all[rand(all.length)];
+  pw = pw.split('').sort(function() { return Math.random() - 0.5; }).join('');
+  generatedPw = pw;
+  document.getElementById('pwDisplay').textContent = pw;
+  document.getElementById('pwDisplay').classList.add('live');
+  document.getElementById('usePwBtn').disabled = false;
+  document.getElementById('pwStatus').textContent = '9 characters · uppercase · lowercase · number · symbol';
+  document.getElementById('pwStatus').style.color = 'var(--green)';
+}
+
+function rand(n) { return Math.floor(Math.random() * n); }
+
+function usePw() {
+  state.password = generatedPw;
+  document.getElementById('pwStatus').textContent = '✓ Password confirmed.';
+  document.getElementById('pwStatus').style.color = 'var(--green)';
+  document.getElementById('usePwBtn').disabled = true;
+}
+
+// ── Save setup ─────────────────────────────────────────────────────────────
+function saveSetup() {
+  var name = document.getElementById('fullName').value.trim();
+  var user = document.getElementById('username').value.trim();
+  var emailL = document.getElementById('emailLocal').value.trim();
+  if (!name || !user) { alert('Please enter a Full Name.'); return; }
+  if (!state.password) { alert('Please generate and confirm a password first.'); return; }
+  state.fullName = name;
+  state.username = user;
+  state.email = emailL + '@ampirical.com';
+  state.confirmed = true;
+  document.getElementById('setupAlert').classList.add('show');
+  setTimeout(function() { switchTab('email'); }, 700);
+}
+
+// ── Email ──────────────────────────────────────────────────────────────────
+function renderEmail() {
+  var alertEl = document.getElementById('emailAlert');
+  var content = document.getElementById('emailContent');
+  if (!state.confirmed) {
+    alertEl.style.display = 'block';
+    content.style.display = 'none';
+    return;
+  }
+  alertEl.style.display = 'none';
+  content.style.display = 'block';
+
+  var firstName = state.fullName.split(' ')[0];
+  var body =
+    'Welcome to Ampirical, ' + firstName + '!\n\n' +
+    'We\'re excited to have you on the team. As part of your onboarding, you\'ve been set up with access to Deltek Vantagepoint, our project management and business development platform. Below you\'ll find everything you need to get started.\n\n' +
+    'YOUR LOGIN CREDENTIALS\n' +
+    'Username:           ' + state.username + '\n' +
+    'Temporary Password: ' + state.password + '\n\n' +
+    'You will be prompted to change your password upon first login.\n\n' +
+    'HOW TO LOG IN\n' +
+    '1. Visit the Vantagepoint portal: https://ampirical.deltekfirst.com/Ampirical/app/\n' +
+    '2. Enter your username and temporary password above.\n' +
+    '3. Follow the prompts to set a new password.\n' +
+    '4. Once logged in, we recommend bookmarking the portal for easy access.\n\n' +
+    'ABOUT VANTAGEPOINT\n' +
+    'Deltek Vantagepoint is Ampirical\'s central platform for managing projects, resources, and business operations. With it, you can:\n' +
+    '  - Track project status, budgets, and timelines\n' +
+    '  - Submit and approve timesheets and expenses\n' +
+    '  - Access resource planning and staffing information\n' +
+    '  - Run reports for real-time project insights\n\n' +
+    'RESOURCES\n' +
+    'How-To Hub (training guides & tutorials): https://ampirical.deltekfirst.com/Ampirical/app/\n' +
+    'Video Tutorials & Demonstrations: https://ampirical.deltekfirst.com/Ampirical/app/\n\n' +
+    'NEED HELP?\n' +
+    'If you run into any issues or have questions, our support team is here for you:\n' +
+    'vpsupport@ampirical.com\n\n' +
+    'Welcome aboard, we\'re glad you\'re here!\n' +
+    'The Business Systems Team';
+
+  var subject = 'Welcome to Deltek Vantagepoint - Your Account is Ready!';
+
+  document.getElementById('emailPreview').textContent = body;
+  document.getElementById('toField').value = state.email;
+  document.getElementById('subjectField').value = subject;
+  document.getElementById('toDisplay').textContent = state.email;
+  document.getElementById('subjectDisplay').textContent = subject;
+
+  currentMailto = 'mailto:' + encodeURIComponent(state.email) +
+    '?subject=' + encodeURIComponent(subject) +
+    '&body=' + encodeURIComponent(body);
+}
+
+function openOutlook() {
+  if (!currentMailto) return;
+  window.location.href = currentMailto;
+  // Show manual fallback after 1.5s in case mailto is blocked
+  setTimeout(function() {
+    var si = document.getElementById('sendInstructions');
+    si.style.display = 'block';
+    // Auto-copy body to clipboard
+    var text = document.getElementById('emailPreview').textContent;
+    navigator.clipboard.writeText(text).catch(function() { fallbackCopy(text); });
+  }, 1500);
+}
+
+function copyEmail() {
+  var text = document.getElementById('emailPreview').textContent;
+  navigator.clipboard.writeText(text)
+    .then(function() { flashCopy('copyFlash'); })
+    .catch(function() { fallbackCopy(text); flashCopy('copyFlash'); });
+}
+
+function copyTo() {
+  var text = document.getElementById('toField').value;
+  navigator.clipboard.writeText(text)
+    .then(function() { flashCopy('toCopyFlash'); })
+    .catch(function() { fallbackCopy(text); flashCopy('toCopyFlash'); });
+}
+
+function copySubject() {
+  var text = document.getElementById('subjectField').value;
+  navigator.clipboard.writeText(text)
+    .then(function() { flashCopy('subjectCopyFlash'); })
+    .catch(function() { fallbackCopy(text); flashCopy('subjectCopyFlash'); });
+}
+
+// ── Ticket ─────────────────────────────────────────────────────────────────
+function renderTicket() {
+  var alertEl = document.getElementById('ticketAlert');
+  var content = document.getElementById('ticketContent');
+  if (!state.confirmed) {
+    alertEl.style.display = 'block';
+    content.style.display = 'none';
+    return;
+  }
+  alertEl.style.display = 'none';
+  content.style.display = 'block';
+
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+  document.getElementById('ticketPreview').textContent =
+    'TICKET CLOSURE NOTE\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    'Date Completed : ' + dateStr + '\n' +
+    'Completed By   : IT Support\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    'ACTION: New Vantagepoint user account created\n\n' +
+    'Employee Name  : ' + state.fullName + '\n' +
+    'Username       : ' + state.username + '\n' +
+    'Email          : ' + state.email + '\n' +
+    'Temp Password  : Provided via welcome email\n' +
+    'Force Reset    : Yes — user prompted on first login\n' +
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    'STATUS: Resolved — Welcome email sent to user.\n';
+}
+
+function copyTicket() {
+  var text = document.getElementById('ticketPreview').textContent;
+  navigator.clipboard.writeText(text)
+    .then(function() { flashCopy('ticketCopyFlash'); })
+    .catch(function() { fallbackCopy(text); flashCopy('ticketCopyFlash'); });
+}
+
+// ── Checklist ──────────────────────────────────────────────────────────────
+function toggleCheck(li) { li.classList.toggle('done'); }
+function resetChecklist() {
+  document.querySelectorAll('#checklist li').forEach(function(li) { li.classList.remove('done'); });
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function flashCopy(id) {
+  var el = document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 1800);
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+}
+
+function fullReset() {
+  if (!confirm('Reset all fields?')) return;
+  state = { fullName: '', username: '', email: '', password: '', userManual: false, emailManual: false, confirmed: false };
+  generatedPw = '';
+  currentMailto = '';
+  document.getElementById('fullName').value = '';
+  document.getElementById('username').value = '';
+  document.getElementById('emailLocal').value = '';
+  document.getElementById('pwDisplay').textContent = '— — — — —';
+  document.getElementById('pwDisplay').classList.remove('live');
+  document.getElementById('pwStatus').textContent = 'Click Generate to create a secure 9-character password.';
+  document.getElementById('pwStatus').style.color = 'var(--muted)';
+  document.getElementById('usePwBtn').disabled = true;
+  document.getElementById('setupAlert').classList.remove('show');
+  document.getElementById('sendInstructions').style.display = 'none';
+  showBadge('userBadge', false);
+  showBadge('emailBadge', false);
+  switchTab('setup');
+}
+
+// ── URL pre-fill (Power Automate) ──────────────────────────────────────────
+window.onload = function() {
+  var params = new URLSearchParams(window.location.search);
+  var name = params.get('name');
+  if (name) {
+    document.getElementById('fullName').value = decodeURIComponent(name);
+    onNameInput();
+  }
+};
+</script>
+</body>
+</html>
